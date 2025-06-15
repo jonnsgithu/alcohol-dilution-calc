@@ -105,16 +105,6 @@
       color: #999;
     }
 
-    .footer select {
-      margin-top: 0.5rem;
-      padding: 0.35rem 0.6rem;
-      font-size: 0.9rem;
-      border-radius: 0.4rem;
-      border: 1px solid #ccc;
-      background-color: #f5f5f5;
-      cursor: pointer;
-    }
-
     @keyframes fadeIn {
       from { opacity: 0; transform: translateY(20px); }
       to { opacity: 1; transform: translateY(0); }
@@ -140,115 +130,40 @@
       </select>
     </div>
 
-    <button id="calcBtn" onclick="calcular()">Calculate</button>
+    <button id="calcBtn" onclick="calculate()">Calculate</button>
 
     <div id="resultado" class="resultado"></div>
 
     <div class="footer">
-      Desenvolvido por eternal_jon · 2025<br>
-      <select id="language" onchange="setLanguage(this.value)">
-        <option value="en">English</option>
-        <option value="pt">Português</option>
-        <option value="es">Español</option>
-      </select>
+      Developed by eternal_jon · 2025
     </div>
   </div>
 
   <script>
-    const translations = {
-      en: {
-        title: "Alcohol Dilution",
-        labelCurrent: "Current Concentration (%)",
-        labelDesired: "Target Concentration (%)",
-        labelVolume: "Desired Volume",
-        placeholderCurrent: "e.g. 95",
-        placeholderDesired: "e.g. 70",
-        placeholderVolume: "e.g. 0.5",
-        button: "Calculate",
-        error: "⚠️ Please check the input values.",
-        result: (vol, target, alc, water) =>
-          `To obtain ${vol} ml at ${target}%:<br><br>
-          ➤ Use <strong>${alc} ml</strong> of concentrated alcohol<br>
-          ➤ Add <strong>${water} ml</strong> of diluent (distilled water, etc)`
-      },
-      pt: {
-        title: "Redução Alcoólica",
-        labelCurrent: "Concentração Atual (%)",
-        labelDesired: "Concentração Desejada (%)",
-        labelVolume: "Volume Desejado",
-        placeholderCurrent: "Ex: 95",
-        placeholderDesired: "Ex: 70",
-        placeholderVolume: "Ex: 0.5",
-        button: "Calcular",
-        error: "⚠️ Verifique os valores inseridos.",
-        result: (vol, target, alc, water) =>
-          `Para obter ${vol} ml a ${target}%:<br><br>
-          ➤ Use <strong>${alc} ml</strong> de álcool concentrado<br>
-          ➤ Adicione <strong>${water} ml</strong> de diluente (água destilada, etc)`
-      },
-      es: {
-        title: "Reducción Alcohólica",
-        labelCurrent: "Concentración Actual (%)",
-        labelDesired: "Concentración Deseada (%)",
-        labelVolume: "Volumen Deseado",
-        placeholderCurrent: "Ej: 95",
-        placeholderDesired: "Ej: 70",
-        placeholderVolume: "Ej: 0.5",
-        button: "Calcular",
-        error: "⚠️ Verifica los valores ingresados.",
-        result: (vol, target, alc, water) =>
-          `Para obtener ${vol} ml al ${target}%:<br><br>
-          ➤ Usa <strong>${alc} ml</strong> de alcohol concentrado<br>
-          ➤ Agrega <strong>${water} ml</strong> de diluyente (agua destilada, etc)`
-      }
-    };
-
-    let currentLang = "en";
-
-    function setLanguage(lang) {
-      currentLang = lang;
-      const t = translations[lang];
-
-      document.getElementById('title').textContent = t.title;
-      document.getElementById('labelCurrent').textContent = t.labelCurrent;
-      document.getElementById('labelDesired').textContent = t.labelDesired;
-      document.getElementById('labelVolume').textContent = t.labelVolume;
-      document.getElementById('concAtual').placeholder = t.placeholderCurrent;
-      document.getElementById('concDesejada').placeholder = t.placeholderDesired;
-      document.getElementById('volumeDesejado').placeholder = t.placeholderVolume;
-      document.getElementById('calcBtn').textContent = t.button;
-    }
-
-    function calcular() {
+    function calculate() {
       const concAtual = parseFloat(document.getElementById('concAtual').value);
       const concDesejada = parseFloat(document.getElementById('concDesejada').value);
       let volumeDesejado = parseFloat(document.getElementById('volumeDesejado').value);
       const unidade = document.getElementById('unidadeVolume').value;
       const resultado = document.getElementById('resultado');
-      const t = translations[currentLang];
 
       if (unidade === 'l') volumeDesejado *= 1000;
 
       if (isNaN(concAtual) || isNaN(concDesejada) || isNaN(volumeDesejado) ||
           concAtual <= 0 || concDesejada <= 0 || volumeDesejado <= 0 || concAtual < concDesejada) {
         resultado.style.display = 'block';
-        resultado.innerHTML = t.error;
+        resultado.innerHTML = "⚠️ Please check the input values.";
         return;
       }
 
       const volumeConcentrado = (concDesejada * volumeDesejado) / concAtual;
       const volumeAgua = volumeDesejado - volumeConcentrado;
 
-      resultado.innerHTML = t.result(
-        volumeDesejado.toFixed(2),
-        concDesejada,
-        volumeConcentrado.toFixed(2),
-        volumeAgua.toFixed(2)
-      );
+      resultado.innerHTML = `To obtain ${volumeDesejado.toFixed(2)} ml at ${concDesejada}%:<br><br>
+          ➤ Use <strong>${volumeConcentrado.toFixed(2)} ml</strong> of concentrated alcohol<br>
+          ➤ Add <strong>${volumeAgua.toFixed(2)} ml</strong> of diluent (distilled water, etc)`;
       resultado.style.display = 'block';
     }
-
-    window.onload = () => setLanguage('en');
   </script>
 </body>
 </html>
