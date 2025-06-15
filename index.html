@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Alcohol Dilution Calculator</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: 'Inter', sans-serif;
+      background: linear-gradient(135deg, #f0f4fa, #dce6f2);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      padding: 2rem;
+    }
+
+    .card {
+      background: #ffffff;
+      border-radius: 1.25rem;
+      box-shadow: 0 12px 32px rgba(0, 0, 0, 0.08);
+      padding: 2.5rem;
+      max-width: 520px;
+      width: 100%;
+      animation: fadeIn 0.8s ease-in-out;
+      position: relative;
+    }
+
+    h1 {
+      text-align: center;
+      margin-bottom: 2rem;
+      color: #2c3e50;
+      font-size: 1.75rem;
+    }
+
+    label {
+      font-weight: 600;
+      display: block;
+      margin-top: 1rem;
+      margin-bottom: 0.3rem;
+      color: #34495e;
+    }
+
+    input, select {
+      width: 100%;
+      padding: 0.75rem;
+      border-radius: 0.5rem;
+      border: 1px solid #ccc;
+      font-size: 1rem;
+      transition: border-color 0.2s;
+    }
+
+    input:focus, select:focus {
+      outline: none;
+      border-color: #3498db;
+    }
+
+    .input-group {
+      display: flex;
+      gap: 0.5rem;
+      align-items: center;
+    }
+
+    button {
+      margin-top: 2rem;
+      width: 100%;
+      padding: 1rem;
+      font-size: 1.05rem;
+      font-weight: 600;
+      background-color: #3498db;
+      color: #fff;
+      border: none;
+      border-radius: 0.6rem;
+      cursor: pointer;
+      transition: background 0.3s, transform 0.15s;
+    }
+
+    button:hover {
+      background-color: #2980b9;
+      transform: translateY(-1px);
+    }
+
+    .resultado {
+      margin-top: 2rem;
+      padding: 1.2rem;
+      border-radius: 0.75rem;
+      background-color: #ecf0f1;
+      text-align: center;
+      font-size: 1.1rem;
+      color: #2c3e50;
+      display: none;
+      line-height: 1.6;
+    }
+
+    .footer {
+      margin-top: 2rem;
+      text-align: center;
+      font-size: 0.85rem;
+      color: #999;
+    }
+
+    .footer select {
+      margin-top: 0.5rem;
+      padding: 0.35rem 0.6rem;
+      font-size: 0.9rem;
+      border-radius: 0.4rem;
+      border: 1px solid #ccc;
+      background-color: #f5f5f5;
+      cursor: pointer;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <h1 id="title">Alcohol Dilution</h1>
+
+    <label for="concAtual" id="labelCurrent">Current Concentration (%)</label>
+    <input type="number" id="concAtual" placeholder="e.g. 95" step="0.1">
+
+    <label for="concDesejada" id="labelDesired">Target Concentration (%)</label>
+    <input type="number" id="concDesejada" placeholder="e.g. 70" step="0.1">
+
+    <label for="volumeDesejado" id="labelVolume">Desired Volume</label>
+    <div class="input-group">
+      <input type="number" id="volumeDesejado" placeholder="e.g. 0.5" step="0.01">
+      <select id="unidadeVolume">
+        <option value="ml">ml</option>
+        <option value="l">liters</option>
+      </select>
+    </div>
+
+    <button id="calcBtn" onclick="calcular()">Calculate</button>
+
+    <div id="resultado" class="resultado"></div>
+
+    <div class="footer">
+      Desenvolvido por eternal_jon · 2025<br>
+      <select id="language" onchange="setLanguage(this.value)">
+        <option value="en">English</option>
+        <option value="pt">Português</option>
+        <option value="es">Español</option>
+      </select>
+    </div>
+  </div>
+
+  <script>
+    const translations = {
+      en: {
+        title: "Alcohol Dilution",
+        labelCurrent: "Current Concentration (%)",
+        labelDesired: "Target Concentration (%)",
+        labelVolume: "Desired Volume",
+        placeholderCurrent: "e.g. 95",
+        placeholderDesired: "e.g. 70",
+        placeholderVolume: "e.g. 0.5",
+        button: "Calculate",
+        error: "⚠️ Please check the input values.",
+        result: (vol, target, alc, water) =>
+          `To obtain ${vol} ml at ${target}%:<br><br>
+          ➤ Use <strong>${alc} ml</strong> of concentrated alcohol<br>
+          ➤ Add <strong>${water} ml</strong> of diluent (distilled water, etc)`
+      },
+      pt: {
+        title: "Redução Alcoólica",
+        labelCurrent: "Concentração Atual (%)",
+        labelDesired: "Concentração Desejada (%)",
+        labelVolume: "Volume Desejado",
+        placeholderCurrent: "Ex: 95",
+        placeholderDesired: "Ex: 70",
+        placeholderVolume: "Ex: 0.5",
+        button: "Calcular",
+        error: "⚠️ Verifique os valores inseridos.",
+        result: (vol, target, alc, water) =>
+          `Para obter ${vol} ml a ${target}%:<br><br>
+          ➤ Use <strong>${alc} ml</strong> de álcool concentrado<br>
+          ➤ Adicione <strong>${water} ml</strong> de diluente (água destilada, etc)`
+      },
+      es: {
+        title: "Reducción Alcohólica",
+        labelCurrent: "Concentración Actual (%)",
+        labelDesired: "Concentración Deseada (%)",
+        labelVolume: "Volumen Deseado",
+        placeholderCurrent: "Ej: 95",
+        placeholderDesired: "Ej: 70",
+        placeholderVolume: "Ej: 0.5",
+        button: "Calcular",
+        error: "⚠️ Verifica los valores ingresados.",
+        result: (vol, target, alc, water) =>
+          `Para obtener ${vol} ml al ${target}%:<br><br>
+          ➤ Usa <strong>${alc} ml</strong> de alcohol concentrado<br>
+          ➤ Agrega <strong>${water} ml</strong> de diluyente (agua destilada, etc)`
+      }
+    };
+
+    let currentLang = "en";
+
+    function setLanguage(lang) {
+      currentLang = lang;
+      const t = translations[lang];
+
+      document.getElementById('title').textContent = t.title;
+      document.getElementById('labelCurrent').textContent = t.labelCurrent;
+      document.getElementById('labelDesired').textContent = t.labelDesired;
+      document.getElementById('labelVolume').textContent = t.labelVolume;
+      document.getElementById('concAtual').placeholder = t.placeholderCurrent;
+      document.getElementById('concDesejada').placeholder = t.placeholderDesired;
+      document.getElementById('volumeDesejado').placeholder = t.placeholderVolume;
+      document.getElementById('calcBtn').textContent = t.button;
+    }
+
+    function calcular() {
+      const concAtual = parseFloat(document.getElementById('concAtual').value);
+      const concDesejada = parseFloat(document.getElementById('concDesejada').value);
+      let volumeDesejado = parseFloat(document.getElementById('volumeDesejado').value);
+      const unidade = document.getElementById('unidadeVolume').value;
+      const resultado = document.getElementById('resultado');
+      const t = translations[currentLang];
+
+      if (unidade === 'l') volumeDesejado *= 1000;
+
+      if (isNaN(concAtual) || isNaN(concDesejada) || isNaN(volumeDesejado) ||
+          concAtual <= 0 || concDesejada <= 0 || volumeDesejado <= 0 || concAtual < concDesejada) {
+        resultado.style.display = 'block';
+        resultado.innerHTML = t.error;
+        return;
+      }
+
+      const volumeConcentrado = (concDesejada * volumeDesejado) / concAtual;
+      const volumeAgua = volumeDesejado - volumeConcentrado;
+
+      resultado.innerHTML = t.result(
+        volumeDesejado.toFixed(2),
+        concDesejada,
+        volumeConcentrado.toFixed(2),
+        volumeAgua.toFixed(2)
+      );
+      resultado.style.display = 'block';
+    }
+
+    window.onload = () => setLanguage('en');
+  </script>
+</body>
+</html>
